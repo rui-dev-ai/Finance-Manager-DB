@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![BudgetBrain Banner](screenshots/dashboard.png)
+![BudgetBrain Banner](screenshots/screenshots/dashboard.png)
 
 **A full-stack personal finance management system with AI-powered spending predictions.**
 
@@ -41,31 +41,31 @@ The system allows users to track daily expenses, set monthly budgets, monitor sa
 
 ### Login & Sign Up
 <div align="center">
-<img src="screenshots/login.png" width="45%" />
-<img src="screenshots/creating_acc.png" width="45%" />
+<img src="screenshots/screenshots/login.png" width="45%" />
+<img src="screenshots/screenshots/creating_acc.png" width="45%" />
 </div>
 
 ### Dashboard
 <div align="center">
-<img src="screenshots/dashboard.png" width="90%" />
+<img src="screenshots/screenshots/dashboard.png" width="90%" />
 </div>
 
 ### Expense Tracking
 <div align="center">
-<img src="screenshots/expenses.png" width="45%" />
-<img src="screenshots/adding_expenses.png" width="45%" />
+<img src="screenshots/screenshots/expenses.png" width="45%" />
+<img src="screenshots/screenshots/adding_expenses.png" width="45%" />
 </div>
 
 ### Analytics & Predictions
 <div align="center">
-<img src="screenshots/charts_dashboard.png" width="45%" />
-<img src="screenshots/prediction.png" width="45%" />
+<img src="screenshots/screenshots/charts_dashboard.png" width="45%" />
+<img src="screenshots/screenshots/prediction.png" width="45%" />
 </div>
 
 ### Savings Goals
 <div align="center">
-<img src="screenshots/goals.png" width="45%" />
-<img src="screenshots/saving_amount.png" width="45%" />
+<img src="screenshots/screenshots/goals.png" width="45%" />
+<img src="screenshots/screenshots/saving_amount.png" width="45%" />
 </div>
 
 ---
@@ -74,7 +74,7 @@ The system allows users to track daily expenses, set monthly budgets, monitor sa
 
 ### ERD Diagram
 <div align="center">
-<img src="screenshots/erd.png" width="80%" />
+<img src="screenshots/screenshots/erd.png" width="80%" />
 </div>
 
 ### Core Tables
