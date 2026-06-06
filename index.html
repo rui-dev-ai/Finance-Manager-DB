@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BudgetBrain - Multi‑User Finance Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%234f46e5'/%3E%3Cstop offset='100%25' stop-color='%237c3aed'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M75 35H25c-5.5 0-10 4.5-10 10v25c0 5.5 4.5 10 10 10h50c5.5 0 10-4.5 10-10V45c0-5.5-4.5-10-10-10zm0 5c2.8 0 5 2.2 5 5v25c0 2.8-2.2 5-5 5H25c-2.8 0-5-2.2-5-5V45c0-2.8 2.2-5 5-5h50z' fill='white' opacity='0.95'/%3E%3Cpath d='M70 50h10v15H70z' fill='white' opacity='0.3'/%3E%3Ccircle cx='68' cy='57.5' r='3' fill='%23fff'/%3E%3C/svg%3E">
+  <!-- Bootstrap 5.3 CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========== Your existing styles (unchanged) ========== */
+    :root {
+      --bg-primary: #f0f2f8;
+      --bg-card: #ffffff;
+      --bg-header: rgba(255,255,255,0.82);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --border-color: rgba(148,163,184,0.2);
+      --accent-primary: #4f46e5;
+      --accent-secondary: #7c3aed;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --accent-danger: #ef4444;
+      --accent-info: #3b82f6;
+      --shadow-sm: 0 1px 3px rgba(15,23,42,0.04);
+      --shadow-md: 0 8px 24px rgba(15,23,42,0.07), 0 2px 6px rgba(15,23,42,0.04);
+      --shadow-lg: 0 20px 50px rgba(15,23,42,0.12), 0 6px 16px rgba(15,23,42,0.06);
+      --shadow-glow: 0 0 40px rgba(79,70,229,0.08);
+      --border-radius: 20px;
+      --transition-speed: 0.35s;
+      --font-brand: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body.dark-mode {
+      --bg-primary: #0a0e1a;
+      --bg-card: #111827;
+      --bg-header: rgba(17,24,39,0.85);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border-color: rgba(100,116,139,0.4);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.25);
+      --shadow-lg: 0 20px 50px rgba(0,0,0,0.45), 0 6px 16px rgba(0,0,0,0.3);
+      --shadow-glow: 0 0 50px rgba(124,58,237,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color var(--transition-speed), color var(--transition-speed);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ===== Header ===== */
+    .app-header {
+      background: var(--bg-header);
+      backdrop-filter: blur(20px) saturate(1.6);
+      -webkit-backdrop-filter: blur(20px) saturate(1.6);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.875rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-speed);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+    }
+
+    .header-logo {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .header-logo svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 2px 6px rgba(79,70,229,0.35));
+    }
+
+    .header-brand-text h1 {
+      font-family: var(--font-brand);
+      font-size: 1.625rem;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      transition: color var(--transition-speed);
+    }
+
+    .header-brand-text p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin: 0;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header-action-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      font-size: 1.125rem;
+      position: relative;
+    }
+
+    .header-action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .header-action-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* User info display */
+    .user-info {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+    .user-info i {
+      color: var(--accent-primary);
+    }
+
+    /* Section labels, cards, charts – exactly as in your dashboard CSS */
+    .section-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-label::before {
+      content: '';
+      width: 18px;
+      height: 3px;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    }
+    .summary-card {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: 1.75rem 1.5rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-speed);
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+    .summary-card.spent::before   { background: linear-gradient(90deg, #ef4444, #f97316); }
+    .summary-card.income::before  { background: linear-gradient(90deg, #10b981, #34d399); }
+    .summary-card.budget::before  { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .summary-card.savings::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.375rem;
+    }
+    .summary-card.spent .card-icon   { background: rgba(239,68,68,0.08); color: var(--accent-danger); }
+    .summary-card.income .card-icon  { background: rgba(16,185,129,0.08); color: var(--accent-success); }
+    .summary-card.budget .card-icon  { background: rgba(59,130,246,0.08); color: var(--accent-info); }
+    .summary-card.savings .card-icon { background: rgba(245,158,11,0.08); color: var(--accent-warning); }
+    .card-trend {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 0.25rem 0.625rem;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .card-trend.up   { background: rgba(16,185,129,0.1); color: var(--accent-success); }
+    .card-trend.down { background: rgba(239,68,68,0.1); color: var(--accent-danger); }
+    .card-label {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .card-value {
+      font-size: 1.875rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.375rem;
+    }
+    .card-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .chart-card {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: 1.75rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-speed);
+    }
+    .chart-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .chart-title {
+      font-family: var(--font-brand);
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+    .chart-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .chart-icon-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(79,70,229,0.08);
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .prediction-card {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 40%, #6366f1 100%);
+      border-radius: var(--border-radius);
+      padding: 2.25rem 2rem;
+      color: white;
+      box-shadow: 0 20px 50px rgba(79,70,229,0.25), 0 6px 16px rgba(79,70,229,0.15);
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .prediction-icon {
+      width: 52px;
+      height: 52px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.625rem;
+      margin-bottom: 1.25rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+      z-index: 1;
+    }
+    .prediction-title {
+      font-family: var(--font-brand);
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      position: relative;
+      z-index: 1;
+    }
+    .prediction-amount {
+      font-size: 2.75rem;
+      font-weight: 900;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.03em;
+      position: relative;
+      z-index: 1;
+    }
+    .prediction-confidence {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.12);
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.08);
+      position: relative;
+      z-index: 1;
+      width: fit-content;
+    }
+    .prediction-message {
+      margin-top: 1.25rem;
+      font-size: 0.8125rem;
+      opacity: 0.85;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+    .prediction-footer {
+      margin-top: auto;
+      padding-top: 1.25rem;
+      font-size: 0.6875rem;
+      opacity: 0.6;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+    .goals-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+    }
+    .goal-item {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      border: 1px solid var(--border-color);
+      transition: all var(--transition-speed);
+    }
+    .goal-item:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateX(6px);
+      border-color: rgba(79,70,229,0.12);
+    }
+    .goal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.625rem;
+    }
+    .goal-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.9375rem;
+    }
+    .goal-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 100px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .goal-status.active    { background: rgba(16,185,129,0.1); color: var(--accent-success); }
+    .goal-status.completed { background: rgba(6,182,212,0.1);  color: #0891b2; }
+    .goal-status.at-risk   { background: rgba(239,68,68,0.1);  color: var(--accent-danger); }
+    .goal-status.on-track  { background: rgba(59,130,246,0.1); color: var(--accent-info); }
+    .goal-amounts {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.625rem;
+    }
+    .goal-amounts .current { font-weight: 700; color: var(--text-primary); }
+    .progress {
+      height: 6px;
+      border-radius: 100px;
+      background: var(--bg-primary);
+      overflow: hidden;
+    }
+    .progress-bar {
+      border-radius: 100px;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .goal-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+    }
+    /* Dark mode specific overrides for readability */
+    body.dark-mode .goal-status.active,
+    body.dark-mode .goal-status.completed,
+    body.dark-mode .goal-status.at-risk,
+    body.dark-mode .goal-status.on-track {
+      opacity: 0.9;
+    }
+    body.dark-mode .card-trend.up,
+    body.dark-mode .card-trend.down {
+      background: rgba(0,0,0,0.25);
+    }
+    body.dark-mode .category-badge {
+      background: rgba(79,70,229,0.2) !important;
+      color: #a5b4fc !important;
+    }
+    body.dark-mode .btn-delete:hover {
+      background: rgba(239,68,68,0.2);
+    }
+    body.dark-mode .form-control, 
+    body.dark-mode .form-select {
+      background: #1e293b;
+      border-color: #334155;
+      color: #f1f5f9;
+    }
+    body.dark-mode .input-group-text {
+      background: #1e293b;
+      border-color: #334155;
+      color: #cbd5e1;
+    }
+    body.dark-mode .table-card {
+      background: var(--bg-card);
+    }
+    body.dark-mode .table td, 
+    body.dark-mode .table th {
+      color: var(--text-primary);
+    }
+    .table-card {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .table-header {
+      padding: 1.5rem 1.75rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .table-title {
+      font-family: var(--font-brand);
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin: 0;
+    }
+    .table > :not(caption) > * > * {
+      background: transparent;
+      color: var(--text-primary);
+      border-color: var(--border-color);
+      padding: 1rem 1.75rem;
+      vertical-align: middle;
+    }
+    .table thead th {
+      font-weight: 600;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+    }
+    .table tbody tr:hover {
+      background-color: rgba(79,70,229,0.02);
+    }
+    .category-badge {
+      padding: 0.375rem 0.875rem;
+      border-radius: 100px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      display: inline-block;
+      letter-spacing: 0.01em;
+      background: rgba(79,70,229,0.1);
+      color: #4f46e5;
+    }
+    .btn-delete {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1rem;
+    }
+    .btn-delete:hover {
+      background: rgba(239,68,68,0.1);
+      color: var(--accent-danger);
+      transform: scale(1.1);
+    }
+    .fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
+      border: none;
+      font-size: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 12px 32px rgba(79,70,229,0.35), 0 4px 8px rgba(79,70,229,0.2);
+      transition: all var(--transition-speed);
+      z-index: 999;
+    }
+    .fab:hover {
+      transform: translateY(-5px) scale(1.06);
+      box-shadow: 0 18px 45px rgba(79,70,229,0.45), 0 6px 12px rgba(79,70,229,0.25);
+    }
+    .fab:active { transform: scale(0.92); }
+    .fab-tooltip {
+      position: absolute;
+      right: calc(100% + 10px);
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      padding: 0.5rem 0.875rem;
+      border-radius: 10px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      white-space: nowrap;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s;
+      pointer-events: none;
+    }
+    .fab:hover .fab-tooltip { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(-4px); }
+    .modal-content {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      box-shadow: 0 30px 70px rgba(15,23,42,0.18);
+      color: var(--text-primary);
+      overflow: hidden;
+    }
+    .modal-header {
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.5rem 2rem;
+    }
+    .modal-title {
+      font-family: var(--font-brand);
+      font-weight: 700;
+      font-size: 1.125rem;
+    }
+    .modal-body { padding: 1.5rem 2rem; }
+    .modal-footer {
+      border-top: 1px solid var(--border-color);
+      padding: 1.25rem 2rem;
+    }
+    .form-control, .form-select {
+      background: var(--bg-primary);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-primary);
+      border-radius: 14px;
+      padding: 0.875rem 1.125rem;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    .form-control:focus, .form-select:focus {
+      background: var(--bg-primary);
+      border-color: var(--accent-primary);
+      color: var(--text-primary);
+      box-shadow: 0 0 0 4px rgba(79,70,229,0.08);
+    }
+    .form-label {
+      font-weight: 600;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+    .btn-close {
+      opacity: 0.4;
+      transition: opacity 0.2s;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+    }
+    .btn-close:hover { opacity: 1; background: var(--bg-primary); }
+    .loading-spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid var(--border-color);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast-container {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1060;
+    }
+    .toast {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      box-shadow: var(--shadow-lg);
+      padding: 0.75rem 1rem;
+    }
+    ::-webkit-scrollbar { width: 7px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 100px; }
+    @media (max-width: 767.98px) {
+      .header-brand-text h1 { font-size: 1.35rem; }
+      .card-value { font-size: 1.5rem; }
+      .prediction-amount { font-size: 2.25rem; }
+      .fab { width: 56px; height: 56px; bottom: 1.25rem; right: 1.25rem; }
+      .user-info { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
+      .goal-update { flex-wrap: wrap; justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+
+        <div class="header-brand">
+          <div class="header-logo">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="logoGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#4f46e5"/>
+                  <stop offset="100%" stop-color="#7c3aed"/>
+                </linearGradient>
+                <linearGradient id="logoGradLight" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#6366f1"/>
+                  <stop offset="100%" stop-color="#8b5cf6"/>
+                </linearGradient>
+              </defs>
+              <rect x="4" y="14" width="56" height="42" rx="12" fill="url(#logoGrad)"/>
+              <rect x="4" y="14" width="56" height="42" rx="12" fill="white" opacity="0.08"/>
+              <path d="M4 22 C4 15.37 9.37 10 16 10 H48 C54.63 10 60 15.37 60 22 V26 H4 V22Z" fill="url(#logoGradLight)"/>
+              <rect x="22" y="18" width="20" height="3" rx="1.5" fill="white" opacity="0.25"/>
+              <rect x="12" y="30" width="20" height="14" rx="5" fill="white" opacity="0.12"/>
+              <circle cx="46" cy="38" r="9" fill="#fbbf24" opacity="0.9"/>
+              <circle cx="46" cy="38" r="7" fill="#f59e0b" opacity="0.5"/>
+              <text x="46" y="42" text-anchor="middle" fill="#92400e" font-size="11" font-weight="800" font-family="Inter">₨</text>
+            </svg>
+          </div>
+          <div class="header-brand-text">
+            <h1>BudgetBrain</h1>
+            <p>Smart Finance Dashboard</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <!-- User info display (replaces dropdown) -->
+          <div class="user-info" id="userInfoDisplay">
+            <i class="bi bi-person-circle"></i>
+            <span id="userName">Loading...</span>
+            <span id="userIncome" class="text-muted"></span>
+          </div>
+          <!-- "Add New User" button REMOVED -->
+          <button class="header-action-btn" id="refreshBtn" title="Refresh data">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+          <button class="header-action-btn" id="darkModeToggle" title="Toggle Dark Mode">
+            <i class="bi bi-moon-stars" id="darkModeIcon"></i>
+          </button>
+          <button class="header-action-btn" id="logoutBtn" title="Sign Out" style="color:var(--accent-danger);border-color:rgba(239,68,68,0.2);">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <main class="container py-4">
+    <!-- Overview section (unchanged) -->
+    <div class="section-label">Overview</div>
+    <div class="row g-4 mb-4">
+      <div class="col-6 col-xl-3 fade-in stagger-1">
+        <div class="summary-card spent">
+          <div class="card-top">
+            <div class="card-icon"><i class="bi bi-credit-card-fill"></i></div>
+            <span class="card-trend down" id="spentTrend"><i class="bi bi-arrow-down-short"></i> --%</span>
+          </div>
+          <div class="card-label">Total Spent This Month</div>
+          <div class="card-value" id="totalSpent"><span class="loading-spinner"></span></div>
+          <div class="card-subtitle">Based on your transactions</div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3 fade-in stagger-2">
+        <div class="summary-card income">
+          <div class="card-top">
+            <div class="card-icon"><i class="bi bi-arrow-down-circle-fill"></i></div>
+            <span class="card-trend up" id="incomeTrend"><i class="bi bi-arrow-up-short"></i> --%</span>
+          </div>
+          <div class="card-label">Monthly Income</div>
+          <div class="card-value" id="monthlyIncome"><span class="loading-spinner"></span></div>
+          <div class="card-subtitle">This month's earnings</div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3 fade-in stagger-3">
+        <div class="summary-card budget">
+          <div class="card-top">
+            <div class="card-icon"><i class="bi bi-piggy-bank-fill"></i></div>
+            <span class="card-trend up" id="budgetTrend"><i class="bi bi-shield-check"></i> Good</span>
+          </div>
+          <div class="card-label">Budget Remaining</div>
+          <div class="card-value" id="budgetRemaining"><span class="loading-spinner"></span></div>
+          <div class="card-subtitle">Left to spend this month</div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3 fade-in stagger-4">
+        <div class="summary-card savings">
+          <div class="card-top">
+            <div class="card-icon"><i class="bi bi-graph-up-arrow"></i></div>
+            <span class="card-trend up" id="savingsTrend"><i class="bi bi-trophy"></i> On Track</span>
+          </div>
+          <div class="card-label">Savings Progress</div>
+          <div class="card-value" id="savingsProgress"><span class="loading-spinner"></span></div>
+          <div class="card-subtitle" id="savingsSubtitle">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytics section (unchanged) -->
+    <div class="section-label">Analytics</div>
+    <div class="row g-4 mb-4">
+      <div class="col-lg-5 fade-in stagger-2">
+        <div class="chart-card h-100">
+          <div class="chart-header">
+            <div><h3 class="chart-title">Spending Breakdown</h3><p class="chart-subtitle">Where your money goes</p></div>
+            <div class="chart-icon-badge"><i class="bi bi-pie-chart-fill"></i></div>
+          </div>
+          <div id="pieChart" style="min-height: 340px;"></div>
+        </div>
+      </div>
+      <div class="col-lg-7 fade-in stagger-3">
+        <div class="chart-card h-100">
+          <div class="chart-header">
+            <div><h3 class="chart-title">Spending Per Category</h3><p class="chart-subtitle">Compare your spending habits</p></div>
+            <div class="chart-icon-badge"><i class="bi bi-bar-chart-fill"></i></div>
+          </div>
+          <div id="barChart" style="min-height: 340px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights & Forecast section (unchanged) -->
+    <div class="section-label">Insights &amp; Forecast</div>
+    <div class="row g-4 mb-4">
+      <div class="col-lg-8 fade-in stagger-2">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div><h3 class="chart-title">Monthly Spending Trend</h3><p class="chart-subtitle">Last 6 months overview</p></div>
+            <div class="chart-icon-badge"><i class="bi bi-graph-up-arrow"></i></div>
+          </div>
+          <div id="lineChart" style="min-height: 340px;"></div>
+        </div>
+      </div>
+      <div class="col-lg-4 fade-in stagger-3">
+        <div class="prediction-card h-100">
+          <div class="prediction-icon"><i class="bi bi-stars"></i></div>
+          <div class="prediction-title">AI Spending Forecast</div>
+          <div class="prediction-amount" id="predictedAmount">-</div>
+          <div class="prediction-confidence"><i class="bi bi-shield-check"></i> <span id="confidenceSpan">-</span></div>
+          <div class="prediction-message" id="predictionMessage">Our AI is crunching the numbers...</div>
+          <div class="prediction-footer"><i class="bi bi-calendar3"></i> Forecast for <strong id="predictionMonth">-</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Savings Goals section (unchanged) -->
+    <div class="section-label">Savings Goals</div>
+    <div class="row mb-4">
+      <div class="col-12 fade-in stagger-2">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div><h3 class="chart-title">Financial Goals</h3><p class="chart-subtitle">Track your progress</p></div>
+            <button class="chart-icon-badge" id="addGoalBtn" data-bs-toggle="modal" data-bs-target="#addGoalModal" title="Add New Goal" style="border:none;cursor:pointer;background:rgba(79,70,229,0.08);color:var(--accent-primary);transition:all 0.25s;" onmouseover="this.style.background='rgba(79,70,229,0.18)'" onmouseout="this.style.background='rgba(79,70,229,0.08)'">
+              <i class="bi bi-plus-circle-fill"></i>
+            </button>
+          </div>
+          <div class="goals-container" id="goalsContainer"><div class="no-data-state"><i class="bi bi-hourglass-split"></i><p>Loading...</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions section (unchanged) -->
+    <div class="section-label">Transactions</div>
+    <div class="row">
+      <div class="col-12 fade-in stagger-3">
+        <div class="table-card">
+          <div class="table-header">
+            <div><h3 class="table-title">Recent Expenses</h3><p class="chart-subtitle" style="margin:0">Your last 10 transactions</p></div>
+            <span class="badge rounded-pill" style="background:var(--accent-primary);padding:0.5rem 0.875rem;" id="expenseCount">0</span>
+          </div>
+          <div class="table-responsive">
+            <table class="table mb-0">
+              <thead><tr><th>Date</th><th>Category</th><th>Amount</th><th>Description</th><th>Payment</th><th style="width:50px"></th></tr></thead>
+              <tbody id="expensesTableBody"><tr><td colspan="6" class="text-center py-5"><span class="loading-spinner"></span></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="height:100px"></div>
+  </main>
+
+  <button class="fab fab-pulse" id="addExpenseBtn" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+    <i class="bi bi-plus-lg"></i><span class="fab-tooltip">Add Expense</span>
+  </button>
+
+  <!-- Add Expense Modal -->
+  <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title"><i class="bi bi-plus-circle-dotted"></i>&nbsp;Add New Expense</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form id="addExpenseForm">
+            <div class="row">
+              <div class="col-md-6 mb-3"><label class="form-label">Amount (PKR)</label><div class="input-group"><span class="input-group-text">₨</span><input type="number" class="form-control" id="expenseAmount" step="0.01" min="0.01" required></div></div>
+              <div class="col-md-6 mb-3"><label class="form-label">Date</label><input type="date" class="form-control" id="expenseDate" required></div>
+            </div>
+            <div class="mb-3"><label class="form-label">Category</label><select class="form-select" id="expenseCategory" required></select></div>
+            <div class="mb-3"><label class="form-label">Description</label><input type="text" class="form-control" id="expenseDescription" required></div>
+            <div class="mb-3"><label class="form-label">Payment Method</label><select class="form-select" id="expensePayment" required><option value="" selected disabled>Select...</option><option>Credit Card</option><option>Debit Card</option><option>Cash</option><option>Bank Transfer</option><option>Digital Wallet</option></select></div>
+          </form>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" id="saveExpenseBtn">Save Expense</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Goal Modal -->
+  <div class="modal fade" id="addGoalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title"><i class="bi bi-bullseye"></i>&nbsp;Add New Goal</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form id="addGoalForm">
+            <div class="mb-3"><label class="form-label">Goal Name</label><input type="text" class="form-control" id="goalName" placeholder="e.g. Emergency Fund" required></div>
+            <div class="row">
+              <div class="col-md-6 mb-3"><label class="form-label">Target Amount (PKR)</label><div class="input-group"><span class="input-group-text">₨</span><input type="number" class="form-control" id="goalTarget" step="0.01" min="1" required></div></div>
+              <div class="col-md-6 mb-3"><label class="form-label">Already Saved (PKR)</label><div class="input-group"><span class="input-group-text">₨</span><input type="number" class="form-control" id="goalCurrent" step="0.01" min="0" value="0" required></div></div>
+            </div>
+            <div class="mb-3"><label class="form-label">Target Date</label><input type="date" class="form-control" id="goalDate" required></div>
+            <div class="mb-3">
+              <label class="form-label">Priority</label>
+              <select class="form-select" id="goalPriority" required>
+                <option value="" selected disabled>Select priority...</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" id="saveGoalBtn"><i class="bi bi-bullseye"></i>&nbsp;Save Goal</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Savings Modal -->
+  <div class="modal fade" id="updateSavingsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-piggy-bank-fill"></i>&nbsp;Update Saved Amount</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-3" style="font-size:0.875rem;color:var(--text-secondary);">
+            Updating saved amount for: <strong id="updateGoalName" style="color:var(--text-primary);">-</strong>
+          </p>
+          <div class="mb-3">
+            <label class="form-label">Current Saved Amount (PKR)</label>
+            <div class="input-group">
+              <span class="input-group-text">₨</span>
+              <input type="number" class="form-control" id="updateCurrentDisplay" disabled style="background:var(--bg-primary);opacity:0.7;">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">New Saved Amount (PKR)</label>
+            <div class="input-group">
+              <span class="input-group-text">₨</span>
+              <input type="number" class="form-control" id="updateNewAmount" step="0.01" min="0" required placeholder="Enter new total saved amount">
+            </div>
+            <div class="mt-2" id="updateDiffHint" style="font-size:0.8rem;color:var(--text-muted);min-height:1.2rem;"></div>
+          </div>
+          <input type="hidden" id="updateGoalId">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveUpdateSavingsBtn">
+            <i class="bi bi-floppy-fill"></i>&nbsp;Update Savings
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script>
+    const API_BASE = 'http://localhost:5000/api';
+    let currentUserId = 1;
+    const state = { darkMode: localStorage.getItem('darkMode') === 'true', charts: {}, categories: [] };
+
+    const formatPKR = (amount) => new Intl.NumberFormat('ur-PK', { style: 'currency', currency: 'PKR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+    const formatPKRPrecise = (amount) => new Intl.NumberFormat('ur-PK', { style: 'currency', currency: 'PKR' }).format(amount);
+    const formatPercentage = (v) => `${Math.round(v)}%`;
+    const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-PK', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const icons = { success:'bi-check-circle-fill', error:'bi-x-circle-fill', warning:'bi-exclamation-triangle-fill', info:'bi-info-circle-fill' };
+      const colors = { success:'#10b981', error:'#ef4444', warning:'#f59e0b', info:'#3b82f6' };
+      const el = document.createElement('div');
+      el.className = 'toast align-items-center';
+      el.innerHTML = `<div class="d-flex align-items-center"><div class="toast-body"><i class="bi ${icons[type]}" style="color:${colors[type]}"></i> ${msg}</div><button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+      container.appendChild(el);
+      const toast = new bootstrap.Toast(el, { delay: 3200 });
+      toast.show();
+      el.addEventListener('hidden.bs.toast', () => el.remove());
+    }
+
+    async function apiFetch(endpoint, options = {}) {
+      const separator = endpoint.includes('?') ? '&' : '?';
+      const url = `${API_BASE}${endpoint}${separator}user_id=${currentUserId}`;
+      const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+    async function apiPost(endpoint, body) {
+      const finalBody = { ...body, user_id: currentUserId };
+      const res = await fetch(`${API_BASE}${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(finalBody) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+    async function apiPut(endpoint, body) {
+      const finalBody = { ...body, user_id: currentUserId };
+      const res = await fetch(`${API_BASE}${endpoint}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(finalBody) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+    async function apiDelete(endpoint) {
+      const res = await fetch(`${API_BASE}${endpoint}?user_id=${currentUserId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    const fetchSummary = () => apiFetch('/summary');
+    const fetchExpenses = () => apiFetch('/expenses');
+    const fetchCategorySpending = () => apiFetch('/categories/spending');
+    const fetchTrend = () => apiFetch('/trend');
+    const fetchPrediction = () => apiFetch('/predict');
+    const fetchGoals = () => apiFetch('/goals');
+    const fetchCategories = () => apiFetch('/categories');
+    const addExpense = (data) => apiPost('/expenses', data);
+    const deleteExpense = (id) => apiDelete(`/expenses/${id}`);
+    const updateGoalProgress = async (goalId, newCurrentAmount) => {
+      return await apiPut(`/goals/${goalId}/progress`, { current_amount: newCurrentAmount });
+    };
+
+    function initDarkMode() {
+      if (state.darkMode) document.body.classList.add('dark-mode');
+      document.getElementById('darkModeIcon').className = state.darkMode ? 'bi bi-sun-fill' : 'bi bi-moon-stars';
+    }
+    function toggleDarkMode() {
+      state.darkMode = !state.darkMode;
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', state.darkMode);
+      document.getElementById('darkModeIcon').className = state.darkMode ? 'bi bi-sun-fill' : 'bi bi-moon-stars';
+      const mode = state.darkMode ? 'dark' : 'light';
+      Object.values(state.charts).forEach(ch => ch?.updateOptions({ theme: { mode } }));
+    }
+
+    function renderPieChart(data) {
+      const isDark = state.darkMode;
+      const normalized = data.map(d => ({
+        CategoryName: d.CategoryName || d.category_name || 'Unknown',
+        Total: parseFloat(d.Total ?? d.total_spent ?? d.total ?? d.amount ?? 0) || 0,
+        ColorCode: d.ColorCode || d.color_code || '#4f46e5'
+      })).filter(d => d.Total > 0);
+      if (!normalized.length) {
+        document.querySelector('#pieChart').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:340px;color:var(--text-muted);flex-direction:column;gap:8px"><i class="bi bi-pie-chart" style="font-size:2rem"></i><p>No spending data yet</p></div>';
+        return;
+      }
+      const total = normalized.reduce((a, b) => a + b.Total, 0);
+      const options = {
+        series: normalized.map(d => d.Total), labels: normalized.map(d => d.CategoryName), colors: normalized.map(d => d.ColorCode),
+        chart: { type: 'donut', height: 340, foreColor: isDark ? '#94a3b8' : '#475569', toolbar: { show: false } },
+        plotOptions: { pie: { donut: { size: '62%', labels: { show: true, total: { show: true, label: 'Total', formatter: () => formatPKR(total) } } } } },
+        legend: { position: 'bottom' }, tooltip: { y: { formatter: v => formatPKRPrecise(v) } }, theme: { mode: isDark ? 'dark' : 'light' }
+      };
+      if (state.charts.pie) state.charts.pie.destroy();
+      state.charts.pie = new ApexCharts(document.querySelector('#pieChart'), options);
+      state.charts.pie.render();
+    }
+
+    function renderBarChart(data) {
+      const isDark = state.darkMode;
+      const sorted = [...data].sort((a,b)=>b.Total - a.Total);
+      const options = {
+        series: [{ name:'Spending', data: sorted.map(c=>c.Total) }],
+        chart: { type:'bar', height:340, foreColor:isDark?'#94a3b8':'#475569', toolbar:{show:false} },
+        plotOptions: { bar: { borderRadius:6, columnWidth:'50%' } },
+        xaxis: { categories: sorted.map(c=>c.CategoryName) },
+        yaxis: { labels: { formatter:v=>formatPKR(v) } }, tooltip: { y: { formatter:v=>formatPKRPrecise(v) } }, theme: { mode:isDark?'dark':'light' }
+      };
+      if (state.charts.bar) state.charts.bar.destroy();
+      state.charts.bar = new ApexCharts(document.querySelector('#barChart'), options);
+      state.charts.bar.render();
+    }
+
+    function renderLineChart(trend) {
+      const isDark = state.darkMode;
+      const options = {
+        series: [{ name:'Total Spending', data: trend.map(t=>t.Total) }],
+        chart: { type:'area', height:340, foreColor:isDark?'#94a3b8':'#475569', toolbar:{show:false} },
+        colors: ['#4f46e5'], fill: { type:'gradient', gradient:{ opacityFrom:0.35, opacityTo:0.03 } },
+        xaxis: { categories: trend.map(t=>t.Month) }, yaxis: { labels: { formatter:v=>formatPKR(v) } },
+        tooltip: { y: { formatter:v=>formatPKRPrecise(v) } }, theme: { mode:isDark?'dark':'light' }
+      };
+      if (state.charts.line) state.charts.line.destroy();
+      state.charts.line = new ApexCharts(document.querySelector('#lineChart'), options);
+      state.charts.line.render();
+    }
+
+    async function computeMonthlyChange() {
+      try {
+        const trend = await fetchTrend();
+        if (trend && trend.length >= 2) {
+          const curr = trend[trend.length-1].Total, prev = trend[trend.length-2].Total;
+          if (prev !== 0) return { change: ((curr - prev) / prev) * 100 };
+        }
+      } catch(e) { console.warn(e); }
+      return { change: 0 };
+    }
+
+    async function updateSummaryCards(summary) {
+      state.budgetRemaining = parseFloat(summary.budget_remaining) || 0;
+      state.totalSpent      = parseFloat(summary.total_spent)      || 0;
+      document.getElementById('totalSpent').textContent = formatPKR(summary.total_spent);
+      document.getElementById('monthlyIncome').textContent = formatPKR(summary.monthly_income);
+      document.getElementById('budgetRemaining').textContent = formatPKR(summary.budget_remaining);
+      document.getElementById('savingsProgress').textContent = formatPercentage(summary.savings_progress);
+      document.getElementById('savingsSubtitle').textContent = `${formatPKR(summary.saved_amount)} of ${formatPKR(summary.target_amount)} saved`;
+      const { change } = await computeMonthlyChange();
+      const spentSpan = document.getElementById('spentTrend');
+      const absChange = Math.abs(change).toFixed(1);
+      if (change > 0) { spentSpan.innerHTML = `<i class="bi bi-arrow-up-short"></i> ${absChange}%`; spentSpan.className = 'card-trend up'; }
+      else if (change < 0) { spentSpan.innerHTML = `<i class="bi bi-arrow-down-short"></i> ${absChange}%`; spentSpan.className = 'card-trend down'; }
+      else { spentSpan.innerHTML = `<i class="bi bi-dash"></i> 0%`; }
+      document.getElementById('incomeTrend').innerHTML = `<i class="bi bi-shield-check"></i> Stable`;
+    }
+
+    function updatePredictionCard(data) {
+      document.getElementById('predictedAmount').textContent = formatPKR(data.predicted_amount);
+      document.getElementById('confidenceSpan').textContent = `${formatPercentage(data.confidence)} confidence`;
+      document.getElementById('predictionMonth').textContent = data.next_month;
+      document.getElementById('predictionMessage').innerHTML = `Your predicted spending for ${data.next_month} is ${formatPKR(data.predicted_amount)}.`;
+    }
+
+    function renderGoals(goals) {
+      const container = document.getElementById('goalsContainer');
+      if (!goals || !goals.length) { container.innerHTML = `<div class="no-data-state"><i class="bi bi-bullseye"></i><p>No savings goals set yet.</p></div>`; return; }
+      container.innerHTML = goals.map(g => {
+        const pct = Math.min(g.ProgressPercent, 100);
+        const barColor = pct>=100 ? '#10b981' : pct>=65 ? '#3b82f6' : pct>=35 ? '#f59e0b' : '#ef4444';
+        return `<div class="goal-item">
+                  <div class="goal-header">
+                    <span class="goal-name">${g.GoalName}</span>
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
+                      <span class="goal-status ${g.Status.toLowerCase()}">${g.Status}</span>
+                      <button class="btn-delete" title="Update saved amount"
+                        onclick="openUpdateSavings(${g.GoalID},'${g.GoalName.replace(/'/g,"\'")}',${g.CurrentAmount},${g.TargetAmount})"
+                        style="color:var(--accent-primary);background:rgba(79,70,229,0.08);">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="goal-amounts"><span class="current">${formatPKR(g.CurrentAmount)}</span><span>${formatPKR(g.TargetAmount)}</span></div>
+                  <div class="progress"><div class="progress-bar" style="width:${pct}%;background:${barColor}"></div></div>
+                  <div class="goal-meta"><span>${formatPercentage(g.ProgressPercent)} complete</span><span>${formatPKR(g.TargetAmount - g.CurrentAmount)} left</span></div>
+                </div>`;
+      }).join('');
+    }
+
+    function renderExpensesTable(expenses) {
+      const tbody = document.getElementById('expensesTableBody');
+      document.getElementById('expenseCount').textContent = expenses.length;
+      if (!expenses.length) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5">No expenses yet. Add your first!</td></tr>`; return; }
+      tbody.innerHTML = expenses.slice(0,10).map(e => `
+        <tr>
+          <td>${formatDate(e.ExpenseDate)}</td>
+          <td><span class="category-badge" style="background:rgba(79,70,229,0.1);color:#4f46e5">${e.CategoryName}</span></td>
+          <td style="font-weight:700">${formatPKRPrecise(e.Amount)}</td>
+          <td>${e.Description || '-'}</td>
+          <td><i class="bi ${e.PaymentMethod==='Credit Card'?'bi-credit-card':'bi-cash'}"></i> ${e.PaymentMethod||'Cash'}</td>
+          <td><button class="btn-delete" onclick="deleteExpenseHandler(${e.ExpenseID})"><i class="bi bi-trash3"></i></button></td>
+        </tr>
+      `).join('');
+    }
+
+    window.deleteExpenseHandler = async (id) => {
+      if (!confirm('Delete this expense?')) return;
+      try { await deleteExpense(id); showToast('Expense deleted', 'success'); await loadAllData(); } catch(e) { showToast('Delete failed', 'error'); }
+    };
+
+    async function loadCategoryDropdown() {
+      try { const cats = await fetchCategories(); state.categories = cats; const select = document.getElementById('expenseCategory'); select.innerHTML = '<option value="" selected disabled>Choose category...</option>' + cats.map(c => `<option value="${c.CategoryID}">${c.CategoryName}</option>`).join(''); } catch(e) { showToast('Could not load categories', 'error'); }
+    }
+
+    async function loadAllData() {
+      try {
+        const [summary, expenses, catSpending, trend, prediction, goals] = await Promise.all([fetchSummary(), fetchExpenses(), fetchCategorySpending(), fetchTrend(), fetchPrediction(), fetchGoals()]);
+        if (summary) await updateSummaryCards(summary);
+        if (catSpending && catSpending.length) { renderPieChart(catSpending); renderBarChart(catSpending); }
+        if (trend && trend.length) renderLineChart(trend);
+        if (prediction) updatePredictionCard(prediction);
+        renderGoals(goals || []);
+        renderExpensesTable(expenses || []);
+      } catch(err) { console.error(err); showToast('Error loading data', 'error'); }
+    }
+
+    async function addExpenseHandler() {
+      const form = document.getElementById('addExpenseForm');
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      const amount = parseFloat(document.getElementById('expenseAmount').value);
+      const budget = state.budgetRemaining || 0;
+      if (amount > budget) {
+        const over = formatPKR(amount - budget);
+        const rem  = formatPKR(budget);
+        showToast(`❌ Expense exceeds budget! You are ${over} over your remaining budget of ${rem}.`, 'error');
+        return;
+      }
+      if (budget > 0 && (amount / budget) >= 0.8) {
+        showToast(`⚠️ Warning: This expense uses ${Math.round((amount/budget)*100)}% of your remaining budget.`, 'warning');
+      }
+      const data = {
+        category_id: parseInt(document.getElementById('expenseCategory').value),
+        amount: amount,
+        expense_date: document.getElementById('expenseDate').value,
+        description: document.getElementById('expenseDescription').value,
+        payment_method: document.getElementById('expensePayment').value
+      };
+      const btn = document.getElementById('saveExpenseBtn');
+      const original = btn.innerHTML;
+      btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Saving...';
+      try {
+        await addExpense(data);
+        bootstrap.Modal.getInstance(document.getElementById('addExpenseModal')).hide();
+        form.reset(); document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+        showToast('Expense added!', 'success'); await loadAllData();
+      } catch(e) { showToast('Add failed', 'error'); }
+      finally { btn.disabled = false; btn.innerHTML = original; }
+    }
+
+    async function addGoalHandler() {
+      const form = document.getElementById('addGoalForm');
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      const goal_name      = document.getElementById('goalName').value.trim();
+      const target_amount  = parseFloat(document.getElementById('goalTarget').value);
+      const current_amount = parseFloat(document.getElementById('goalCurrent').value) || 0;
+      const target_date    = document.getElementById('goalDate').value;
+      const priority       = document.getElementById('goalPriority').value;
+      if (!goal_name || isNaN(target_amount) || !target_date || !priority) { showToast('All fields required', 'error'); return; }
+      const btn = document.getElementById('saveGoalBtn');
+      const original = btn.innerHTML;
+      btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Saving...';
+      try {
+        await apiPost('/goals', { goal_name, target_amount, current_amount, target_date, priority });
+        bootstrap.Modal.getInstance(document.getElementById('addGoalModal')).hide();
+        form.reset();
+        const nextYear = new Date(); nextYear.setFullYear(nextYear.getFullYear() + 1);
+        document.getElementById('goalDate').value = nextYear.toISOString().split('T')[0];
+        showToast('Goal added!', 'success');
+        await loadAllData();
+      } catch(e) { showToast('Add goal failed', 'error'); }
+      finally { btn.disabled = false; btn.innerHTML = original; }
+    }
+
+    window.openUpdateSavings = function(goalId, goalName, currentAmount, targetAmount) {
+      document.getElementById('updateGoalId').value        = goalId;
+      document.getElementById('updateGoalName').textContent = goalName;
+      document.getElementById('updateCurrentDisplay').value = currentAmount;
+      document.getElementById('updateNewAmount').value      = '';
+      document.getElementById('updateDiffHint').textContent = '';
+      const newInput = document.getElementById('updateNewAmount');
+      newInput.oninput = function() {
+        const newVal = parseFloat(this.value) || 0;
+        const diff   = newVal - currentAmount;
+        const hint   = document.getElementById('updateDiffHint');
+        if (this.value === '') { hint.textContent = ''; return; }
+        if (diff > 0)      { hint.innerHTML = `<span style="color:var(--accent-success)"><i class="bi bi-arrow-up-short"></i> Adding ${formatPKR(diff)} to savings</span>`; }
+        else if (diff < 0) { hint.innerHTML = `<span style="color:var(--accent-danger)"><i class="bi bi-arrow-down-short"></i> Reducing by ${formatPKR(Math.abs(diff))}</span>`; }
+        else               { hint.innerHTML = `<span style="color:var(--text-muted)">No change</span>`; }
+        if (newVal > targetAmount) { hint.innerHTML += ` &nbsp;<span style="color:var(--accent-warning)"><i class="bi bi-exclamation-triangle"></i> Exceeds target</span>`; }
+      };
+      new bootstrap.Modal(document.getElementById('updateSavingsModal')).show();
+    };
+
+    async function updateSavingsHandler() {
+      const goalId      = parseInt(document.getElementById('updateGoalId').value);
+      const newAmount   = parseFloat(document.getElementById('updateNewAmount').value);
+      const oldAmount   = parseFloat(document.getElementById('updateCurrentDisplay').value) || 0;
+      if (isNaN(newAmount) || newAmount < 0) { showToast('Please enter a valid amount', 'error'); return; }
+      const increase = newAmount - oldAmount;
+      if (increase > 0) {
+        const budget = state.budgetRemaining || 0;
+        if (increase > budget) {
+          const over = formatPKR(increase - budget);
+          const rem  = formatPKR(budget);
+          showToast(`❌ Cannot add ${formatPKR(increase)} to savings — you are ${over} over your remaining budget of ${rem}.`, 'error');
+          return;
+        }
+        if (budget > 0 && (increase / budget) >= 0.8) {
+          showToast(`⚠️ Warning: This savings update uses ${Math.round((increase/budget)*100)}% of your remaining budget.`, 'warning');
+        }
+      }
+      const btn = document.getElementById('saveUpdateSavingsBtn');
+      const original = btn.innerHTML;
+      btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Updating...';
+      try {
+        await updateGoalProgress(goalId, newAmount);
+        bootstrap.Modal.getInstance(document.getElementById('updateSavingsModal')).hide();
+        showToast('Savings updated!', 'success');
+        await loadAllData();
+      } catch(e) { showToast('Update failed', 'error'); }
+      finally { btn.disabled = false; btn.innerHTML = original; }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const bbUserId   = localStorage.getItem('bb_user_id');
+      const bbUsername = localStorage.getItem('bb_username');
+      const bbIncome   = localStorage.getItem('bb_monthly_income');
+      if (!bbUserId) {
+        window.location.href = 'login.html';
+        return;
+      }
+      currentUserId = parseInt(bbUserId);
+      // Display user info
+      document.getElementById('userName').textContent = bbUsername || 'User';
+      if (bbIncome && !isNaN(parseFloat(bbIncome))) {
+        document.getElementById('userIncome').textContent = formatPKR(parseFloat(bbIncome));
+      } else {
+        // Optionally fetch from API
+        document.getElementById('userIncome').textContent = '';
+      }
+      const brandSub = document.querySelector('.header-brand-text p');
+      if (brandSub) {
+        brandSub.textContent = `Logged in as ${bbUsername}`;
+      }
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (!confirm('Sign out of BudgetBrain?')) return;
+        localStorage.removeItem('bb_user_id');
+        localStorage.removeItem('bb_username');
+        localStorage.removeItem('bb_email');
+        localStorage.removeItem('bb_monthly_income');
+        window.location.href = 'login.html';
+      });
+      initDarkMode();
+      document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+      document.getElementById('saveExpenseBtn').addEventListener('click', addExpenseHandler);
+      document.getElementById('saveGoalBtn').addEventListener('click', addGoalHandler);
+      document.getElementById('saveUpdateSavingsBtn').addEventListener('click', updateSavingsHandler);
+      document.getElementById('refreshBtn').addEventListener('click', loadAllData);
+      document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+      const nextYear = new Date(); nextYear.setFullYear(nextYear.getFullYear() + 1);
+      document.getElementById('goalDate').value = nextYear.toISOString().split('T')[0];
+      await loadCategoryDropdown();
+      await loadAllData();
+    });
+  </script>
+</body>
+</html>
